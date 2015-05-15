@@ -20,7 +20,7 @@ class BoardinfoerSpider(scrapy.Spider):
     start_urls = (
         'http://www.bbs.byr.cn/',
     )
-
+    baseUrl = 'http://bbs.byr.cn'
     def __init__(self):
         leancloud.init('mctfj249nwy7c1ymu3cps56lof26s17hevwq4jjqeqoloaey', master_key='ao6h5oezem93tumlalxggg039qehcbl3x3u8ofo7crw7atok')
 
@@ -28,6 +28,7 @@ class BoardinfoerSpider(scrapy.Spider):
         query = Query(Boards)
         query.exists('boardLink')
         query.select('boardLink')
+	query.limit(500)
         boards= query.find()
         self.urls = []
         for board in boards:
@@ -46,14 +47,16 @@ class BoardinfoerSpider(scrapy.Spider):
         item['boardLink'] = re.split('http://bbs.byr.cn(\w*)',response.url)[2]
         item['moderatorLinkList'] = response.xpath('//div[@class="b-head corner"]/span[@class="n-right"]/a/@href').extract()
         item['moderatorIdList'] = response.xpath('//div[@class="b-head corner"]/span[@class="n-right"]/a/text()').extract()
-        item['recordNum'] = response.xpath('//div[@class="b-head corner"]/span[@class="n-left"]/span[@title]/text()').re('\d*')[3]
+        item['recordNum'] = int(response.xpath('//div[@class="b-head corner"]/span[@class="n-left"]/span[@title]/text()').re('\d*')[3])
         item['recordTime'] = response.xpath('//div[@class="b-head corner"]/span[@class="n-left"]/span[@title]/@title').re('\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}')
-        item['currentOnlineNum'] = response.xpath('//div[@class="b-head corner"]/span[@class="n-left"]/text()')[0].re('\d*')[6]
-        item['todayQuestionNum'] = response.xpath('//div[@class="b-head corner"]/span[@class="n-left"]/text()')[1].re('\d*')[5]
-
-        item['totalQuestionNum'] = response.xpath('//div[@class="t-pre-bottom"]//li[@class="page-pre"]/i/text()').extract()
-        item['totalPageNum'] = response.xpath('//div[@class="t-pre-bottom"]//ul[@class="pagination"]//ol[@class="page-main"]/li[last()-1]/a/text()').extract()
-
+        item['currentOnlineNum'] = int(response.xpath('//div[@class="b-head corner"]/span[@class="n-left"]/text()')[0].re('\d*')[6])
+        item['todayQuestionNum'] = int(response.xpath('//div[@class="b-head corner"]/span[@class="n-left"]/text()')[1].re('\d*')[5])
+#	inspect_response(response,self)
+        item['totalQuestionNum'] = int(response.xpath('//div[@class="t-pre-bottom"]//li[@class="page-pre"]/i/text()').extract()[0])
+        try:
+            item['totalPageNum'] = int(response.xpath('//div[@class="t-pre-bottom"]//ul[@class="pagination"]//ol[@class="page-main"]/li[last()-1]/a/text()').extract()[0])
+        except IndexError,e:
+           item['totalPageNum'] = int(response.xpath('//div[@class="t-pre-bottom"]//ul[@class="pagination"]//ol[@class="page-main"]/li[last()]/a/text()').extract()[0])
       #  print item['sectionListLink']
 
         return item

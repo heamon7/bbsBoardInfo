@@ -17,11 +17,12 @@ class BoardInfoPipeline(object):
         leancloud.init('mctfj249nwy7c1ymu3cps56lof26s17hevwq4jjqeqoloaey', master_key='ao6h5oezem93tumlalxggg039qehcbl3x3u8ofo7crw7atok')
 
     def process_item(self, item, spider):
-        boardInfo = Object.extend('BoardInfo')
+        BoardInfo = Object.extend('BoardInfo')
+	boardInfo = BoardInfo()
         boardInfo.set('boardLink',item['boardLink'])
         for index , people in enumerate(item['moderatorLinkList']):
-            boardInfo.set('moderatorLink'+index,item['moderatorLinkList'][index])
-            boardInfo.set('moderatorId'+index,item['moderatorIdList'][index])
+            boardInfo.set('moderatorLink'+str(index),item['moderatorLinkList'][index])
+            boardInfo.set('moderatorId'+str(index),item['moderatorIdList'][index])
 
         boardInfo.set('recordNum',item['recordNum'])
         boardInfo.set('recordTime',item['recordTime'])
