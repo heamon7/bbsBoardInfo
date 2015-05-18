@@ -53,7 +53,7 @@ class BoardinfoerSpider(scrapy.Spider):
         item['moderatorLinkList'] = response.xpath('//div[@class="b-head corner"]/span[@class="n-right"]/a/@href').extract()
         item['moderatorIdList'] = response.xpath('//div[@class="b-head corner"]/span[@class="n-right"]/a/text()').extract()
         item['recordNum'] = int(response.xpath('//div[@class="b-head corner"]/span[@class="n-left"]/span[@title]/text()').re('\d*')[3])
-        item['recordTime'] = response.xpath('//div[@class="b-head corner"]/span[@class="n-left"]/span[@title]/@title').re('\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}')
+        item['recordTime'] = response.xpath('//div[@class="b-head corner"]/span[@class="n-left"]/span[@title]/@title').re('\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}')[0]
         item['currentOnlineNum'] = int(response.xpath('//div[@class="b-head corner"]/span[@class="n-left"]/text()')[0].re('\d*')[6])
         item['todayQuestionNum'] = int(response.xpath('//div[@class="b-head corner"]/span[@class="n-left"]/text()')[1].re('\d*')[5])
 #	inspect_response(response,self)
