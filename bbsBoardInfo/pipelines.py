@@ -37,7 +37,7 @@ class BoardInfoPipeline(object):
         except LeanCloudError,e:
             boardInfoRet =[]
             print e
-            
+
         if boardInfoRet:
 
             boardInfoRet[0].set('moderatorLinkList',item['moderatorLinkList'])
@@ -77,7 +77,7 @@ class BoardInfoPipeline(object):
         boardStatus.set('totalPageNum',item['totalPageNum'])
 
         try:
-            boardInfo.save()
+            boardStatus.save()
         except LeanCloudError,e:
             print e
 
