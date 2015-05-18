@@ -12,6 +12,7 @@ from scrapy import log
 from scrapy.exceptions import DropItem
 
 from  bbsBoardInfo.items import BbsboardinfoItem
+import os
 
 
 class BoardinfoerSpider(scrapy.Spider):
@@ -21,22 +22,26 @@ class BoardinfoerSpider(scrapy.Spider):
         'http://www.bbs.byr.cn/',
     )
     baseUrl = 'http://bbs.byr.cn'
-    def __init__(self):
-        leancloud.init('mctfj249nwy7c1ymu3cps56lof26s17hevwq4jjqeqoloaey', master_key='ao6h5oezem93tumlalxggg039qehcbl3x3u8ofo7crw7atok')
+    def __init__(self,stats):
+        self.stats = stats
+        leancloud.init('yn33vpeqrplovaaqf3r9ttjl17o7ej0ywmxv1ynu3d1c5wk8', master_key='zkw2itoe7oyyr3vmyrs8m95gbk0azmikc3jrtk2lw2z4792i')
 
         Boards = Object.extend('Boards')
         query = Query(Boards)
         query.exists('boardLink')
         query.select('boardLink')
-	query.limit(500)
+        query.limit(500)
         boards= query.find()
         self.urls = []
         for board in boards:
             self.urls.append(self.baseUrl+board.get('boardLink'))
+    @classmethod
+    def from_crawler(cls, crawler):
+        return cls(crawler.stats)
 
     def start_requests(self):
-        print "start_requests ing ......"
-        print self.urls
+        #print "start_requests ing ......"
+        #print self.urls
         for url in self.urls:
             yield Request(url,callback = self.parse)
 
@@ -60,3 +65,21 @@ class BoardinfoerSpider(scrapy.Spider):
       #  print item['sectionListLink']
 
         return item
+    def closed(self,reason):
+        #f = open('../../nohup.out')
+        #print f.read()
+        try:
+            nohupOut = open(os.getcwd()+'/nohup.out','r').read()
+        except:
+            nohupOut = "Cannot read nohup.out file"
+        CrawlerLog = Object.extend('CrawlerLog')
+        crawlerLog = CrawlerLog()
+
+        crawlerLog.set('crawlerName',self.name)
+        crawlerLog.set('crawlerLog',nohupOut)
+        crawlerLog.set('closedReason',reason)
+        crawlerLog.set('crawlerStats',self.stats.get_stats())
+        try:
+            crawlerLog.save()
+        except:
+            pass
