@@ -32,7 +32,12 @@ class BoardInfoPipeline(object):
         query = Query(BoardInfo)
 
         query.equal_to('boardId',boardId)
-        boardInfoRet = query.find()
+        try:
+            boardInfoRet = query.find()
+        except LeanCloudError,e:
+            boardInfoRet =[]
+            print e
+            
         if boardInfoRet:
 
             boardInfoRet[0].set('moderatorLinkList',item['moderatorLinkList'])
