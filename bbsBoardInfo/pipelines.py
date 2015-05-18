@@ -12,10 +12,12 @@ from leancloud import Query
 from scrapy import log
 from scrapy.exceptions import DropItem
 import time
+from bbsBoardInfo import settings
+
 class BoardInfoPipeline(object):
     dbPrime = 97
     def __init__(self):
-        leancloud.init('yn33vpeqrplovaaqf3r9ttjl17o7ej0ywmxv1ynu3d1c5wk8', master_key='zkw2itoe7oyyr3vmyrs8m95gbk0azmikc3jrtk2lw2z4792i')
+        leancloud.init(settings.APP_ID, master_key=settings.MASTER_KEY)
 
     def process_item(self, item, spider):
         tableIndex = int(100*time.time())%self.dbPrime

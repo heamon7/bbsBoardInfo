@@ -12,6 +12,8 @@ from scrapy import log
 from scrapy.exceptions import DropItem
 
 from  bbsBoardInfo.items import BbsboardinfoItem
+from bbsBoardInfo import settings
+
 import os
 
 
@@ -24,7 +26,7 @@ class BoardinfoerSpider(scrapy.Spider):
     baseUrl = 'http://bbs.byr.cn'
     def __init__(self,stats):
         self.stats = stats
-        leancloud.init('yn33vpeqrplovaaqf3r9ttjl17o7ej0ywmxv1ynu3d1c5wk8', master_key='zkw2itoe7oyyr3vmyrs8m95gbk0azmikc3jrtk2lw2z4792i')
+        leancloud.init(settings.APP_ID, master_key=settings.MASTER_KEY)
 
         Boards = Object.extend('Boards')
         query = Query(Boards)
